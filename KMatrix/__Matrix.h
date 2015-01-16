@@ -23,7 +23,7 @@ template<class T,int M,int N>struct KMatrix
 template<class T,int M> inline
 void iniS_trace(T *pOut,const KMatrix<T,M,M>& A)
 {
-	*pOut = A(0,0); for(int i=1;i<M;i++) (*pOut)+=A(i,i);
+  *pOut = A(0,0); for(int i=1;i<M;i++) (*pOut)+=A(i,i);
 }
 
 template<class T, int M> inline
@@ -73,23 +73,23 @@ minM_IS(KMatrix<T,M,M>* const pOut, const T& val)
 template<class T,int M,int N> inline
 void addM_MT(KMatrix<T,M,N>* const pOut, const KMatrix<T,N,M>& A)
 {
-	__xxxM_MT__(+=)
+  __xxxM_MT__(+=)
 }
 template<class T,int M,int N> inline
 void iniM_MT(KMatrix<T,M,N>* const pOut, const KMatrix<T,N,M>& A)
 {
-	__xxxM_MT__(=)
+  __xxxM_MT__(=)
 }
 template<class T,int M,int N> inline
 void negM_MT(KMatrix<T,M,N>* const pOut, const KMatrix<T,N,M>& A)
 {
-	__xxxM_MT__(=-)
+  __xxxM_MT__(=-)
 }
 
 template<class T,int M,int N> inline
 void minM_MT(KMatrix<T,M,N>* const pOut, const KMatrix<T,N,M>& A)
 {
-	__xxxM_MT__(-=)
+  __xxxM_MT__(-=)
 }
 
 #undef __xxxM_MT__
