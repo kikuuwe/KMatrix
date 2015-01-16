@@ -1,11 +1,9 @@
 /**************************************
  *
  * Most of the code in this file comes from "Graphics Gems IV":
- *
- *   http://tog.acm.org/resources/GraphicsGems/gemsiv/polar_decomp/Decompose.c
- *   https://github.com/erich666/GraphicsGems/tree/master/gemsiv/polar_decomp
- *
- * authored by Ken Shoemake, 1993 
+ *  * http://tog.acm.org/resources/GraphicsGems/gemsiv/polar_decomp/Decompose.c
+ *  * https://github.com/erich666/GraphicsGems/tree/master/gemsiv/polar_decomp
+ * which is authored by Ken Shoemake, 1993 
  *
 ***************************************/
 
@@ -47,13 +45,9 @@ namespace KNSforPolarDecomp
       vcross(M[2], M[0], MadjT[1]);
       vcross(M[0], M[1], MadjT[2]);
   }
-
-
   /******* Decomp Auxiliaries *******/
-
   static HMatrix mat_id = {{1,0,0,0},{0,1,0,0},{0,0,1,0},{0,0,0,1}};
-
-  /** Compute either the 1 or infinity norm of M, depending on tpose **/
+ /** Compute either the 1 or infinity norm of M, depending on tpose **/
   inline double mat_norm(HMatrix M, int tpose)
   {
     double sum, max;
