@@ -1,5 +1,4 @@
 //#########################################################################################
-
 template<int M,int N,int K> inline void
 iniM_mulMOMO(KMatrix<double,M,N>* const pOut, const KMatrix<double,M,K>& A,const KMatrix<double,K,N>& B)
 {
@@ -19,27 +18,24 @@ iniM_mulMTMO(KMatrix<double,M,N>* const pOut, const KMatrix<double,K,M>& A,const
     for(int k=1;k<K;k++) (*pOut)(i,j) += A(k,i) * B(k,j) ;
   }
 }
-/**********************************************************************************/
-/**********************************************************************************/
-/**********************************************************************************/
-/***************************************************/
-#define ___xxxU_mulMOMT___( _eqsini_, _eqs_ ) {               \
+//#########################################################################################
+
+#define ___xxxU_mulMOMT___( _eqsini_, _eqs_ ) {             \
   for(int i=0;i<M;i++)for(int j=i;j<M;j++)                  \
   {                                                         \
       double* pO =&((*pOut)(i,j))  ;                        \
                            (*pO) _eqsini_ A(i,0) * B(j,0) ; \
-    for(int k=1;k<K;k++) (*pO) _eqs_    A(i,k) * B(j,k) ; \
+      for(int k=1;k<K;k++) (*pO) _eqs_    A(i,k) * B(j,k) ; \
   }                                                         \
-}                                                             \
+}                                                           \
 
+//#########################################################################################
 
 template<class T,int M,int K> inline void
 iniU_mulMOMT(KUSymMat<T,M>* const pOut, const KMatrix<T,M,K>& A,const KMatrix<T,M,K>& B){___xxxU_mulMOMT___(=,+=)}
 
 template<class T,int M,int K> inline void
 addU_mulMOMT(KUSymMat<T,M>* const pOut, const KMatrix<T,M,K>& A,const KMatrix<T,M,K>& B){___xxxU_mulMOMT___(+=,+=)}
-
-/***************************************************/
 
 //#########################################################################################
 
