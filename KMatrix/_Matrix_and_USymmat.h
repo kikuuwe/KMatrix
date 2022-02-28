@@ -1,6 +1,4 @@
 
-
-
 template<class T,int M> inline
 void minU_MO(KUSymMat<T,M>* const pOut, const KMatrix<T,M,M>& A)
 {
@@ -53,10 +51,7 @@ void minU_MT(KUSymMat<T,M>* const pOut, const KMatrix<T,M,M>& A)
   }
 }
 
-
-
-/*************************************/
-/*************************************/
+/**************************************************************************/
 
 template<class T, int N, int M> inline
 void iniU_squMOMT(KUSymMat<T,M> * const pO, const KMatrix<T,M,N>& A)
@@ -86,18 +81,7 @@ void iniU_squMTMO(KUSymMat<T,M> * const pOut, const KMatrix<T,N,M>& A)
   }
 }
 
-
-
-/*************************************/
-/*************************************/
-
-/*************************************/
-/*************************************/
-
-
-
-//############################################################################
-
+/**************************************************************************/
 
 template<int M,int N> inline
 void iniU_quadMOUOMT(KUSymMat<double,M>* const pOut, const KUSymMat<double,N>& A, const KMatrix<double,M,N>& B)
@@ -114,5 +98,6 @@ void addU_quadMOUOMT(KUSymMat<double,M>* const pOut, const KUSymMat<double,N>& A
   addU_mulMOMT(pOut  ,  tBA , B  );
 }
 
+/**************************************************************************/
 
 
