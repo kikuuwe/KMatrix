@@ -1,23 +1,3 @@
-
-
-
-template<class T,int M> inline
-void minU_MO(KUSymMat<T,M>* const pOut, const KMatrix<T,M,M>& A)
-{
-        T * pO = (      T*) pOut ;
-  const T * pA = (const T*) &A   ;
-  {
-                                     (*pO) -= (*pA);
-    for(int j=0+1;j<M;j++){pO++;pA++;(*pO) -= (*pA);}
-  }
-  for(int i=1;i<M;i++)
-  {
-    pO+=(1+i); pA +=(1+i) ;
-                                     (*pO) -= (*pA);
-    for(int j=i+1;j<M;j++){pO++;pA++;(*pO) -= (*pA);}
-  }
-}
-
 template<class T,int M> inline
 void addM_UO(KMatrix<T,M,M>* const pOut, const KUSymMat<T,M>& A)
 {
@@ -33,6 +13,24 @@ void addM_UO(KMatrix<T,M,M>* const pOut, const KUSymMat<T,M>& A)
     pA +=(1+i) ;pO1+=(1+i);pO2 =((T*)pOut)+(M+1)*i;  
                                              (*pO1)+=(*pA);
     for(int j=i+1;j<M;j++){pO1++;pO2+=M;pA++;(*pO1)+=(*pA);(*pO2)+=(*pA);}
+  }
+}
+/************************************************************************/
+
+template<class T,int M> inline
+void minU_MO(KUSymMat<T,M>* const pOut, const KMatrix<T,M,M>& A)
+{
+        T * pO = (      T*) pOut ;
+  const T * pA = (const T*) &A   ;
+  {
+                                     (*pO) -= (*pA);
+    for(int j=0+1;j<M;j++){pO++;pA++;(*pO) -= (*pA);}
+  }
+  for(int i=1;i<M;i++)
+  {
+    pO+=(1+i); pA +=(1+i) ;
+                                     (*pO) -= (*pA);
+    for(int j=i+1;j<M;j++){pO++;pA++;(*pO) -= (*pA);}
   }
 }
 
@@ -53,10 +51,7 @@ void minU_MT(KUSymMat<T,M>* const pOut, const KMatrix<T,M,M>& A)
   }
 }
 
-
-
-/*************************************/
-/*************************************/
+/************************************************************************/
 
 template<class T, int N, int M> inline
 void iniU_squMOMT(KUSymMat<T,M> * const pO, const KMatrix<T,M,N>& A)
@@ -67,6 +62,7 @@ void iniU_squMOMT(KUSymMat<T,M> * const pO, const KMatrix<T,M,N>& A)
     for(int k=0;k<N;k++) (*pO)(i,j) += A(i,k) * A(j,k) ;
   }
 }
+
 template<class T, int M, int N> inline
 void iniU_squMTMO(KUSymMat<T,M> * const pOut, const KMatrix<T,N,M>& A)
 {
@@ -85,12 +81,7 @@ void iniU_squMTMO(KUSymMat<T,M> * const pOut, const KMatrix<T,N,M>& A)
     }
   }
 }
-
-
-
-
-//############################################################################
-
+/************************************************************************/
 
 template<int M,int N> inline
 void iniU_quadMOUOMT(KUSymMat<double,M>* const pOut, const KUSymMat<double,N>& A, const KMatrix<double,M,N>& B)
@@ -99,6 +90,7 @@ void iniU_quadMOUOMT(KUSymMat<double,M>* const pOut, const KUSymMat<double,N>& A
   iniM_mulMOUO(&tBA  , B ,    A  );
   iniU_mulMOMT(pOut  ,  tBA , B  );
 }
+
 template<int M,int N> inline
 void addU_quadMOUOMT(KUSymMat<double,M>* const pOut, const KUSymMat<double,N>& A, const KMatrix<double,M,N>& B)
 {
@@ -107,7 +99,6 @@ void addU_quadMOUOMT(KUSymMat<double,M>* const pOut, const KUSymMat<double,N>& A
   addU_mulMOMT(pOut  ,  tBA , B  );
 }
 
-
 template<int M,int N> inline
 void iniU_quadMTUOMO(KUSymMat<double,M>* const pOut, const KUSymMat<double,N>& A, const KMatrix<double,N,M>& B)
 {
@@ -115,4 +106,3 @@ void iniU_quadMTUOMO(KUSymMat<double,M>* const pOut, const KUSymMat<double,N>& A
   iniM_mulUOMO(&tAB  , A ,    B  );
   iniU_mulMTMO(pOut   , B ,  tAB );
 }
-
