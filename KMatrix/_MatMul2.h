@@ -27,15 +27,15 @@ iniM_mulMTMO(KMatrix<double,M,N>* const pOut, const KMatrix<double,K,M>& A,const
                            (*pO) _eqsini_ A(i,0) * B(j,0) ; \
       for(int k=1;k<K;k++) (*pO) _eqs_    A(i,k) * B(j,k) ; \
   }                                                         \
-}                                                           \
-
-//#########################################################################################
+}                                                           
 
 template<class T,int M,int K> inline void
 iniU_mulMOMT(KUSymMat<T,M>* const pOut, const KMatrix<T,M,K>& A,const KMatrix<T,M,K>& B){___xxxU_mulMOMT___(=,+=)}
 
 template<class T,int M,int K> inline void
 addU_mulMOMT(KUSymMat<T,M>* const pOut, const KMatrix<T,M,K>& A,const KMatrix<T,M,K>& B){___xxxU_mulMOMT___(+=,+=)}
+
+#undef ___xxxU_mulMOMT___
 
 //#########################################################################################
 
@@ -59,14 +59,13 @@ addM_mulMOMT(KMatrix<double,M,N>* const pOut, const KMatrix<double,M,K>& A,const
   }
 }
 
-/*************************************/
-/*************************************/
+//#########################################################################################
 template<int M,int K> inline
 void iniU_mulMTMO(KUSymMat<double,M>* const pOut, const KMatrix<double,K,M>& A,const KMatrix<double,K,M>& B)
 {
   for(int i=0;i<M;i++)for(int j=i;j<M;j++)
   {
-                           (*pOut)(i,j)  = A(0,i) * B(0,j) ;
+                         (*pOut)(i,j)  = A(0,i) * B(0,j) ;
     for(int k=1;k<K;k++) (*pOut)(i,j) += A(k,i) * B(k,j) ;
   }
 }
@@ -82,7 +81,6 @@ void addU_mulMTMO(KUSymMat<double,M>* const pOut, const KMatrix<double,K,M>& A,c
 }
 
 //#########################################################################################
-
 
 template<class T,int M,int N> inline
 void iniM_mulUOMO(KMatrix<T,M,N>* const pOut, const KUSymMat<T,M>& A,const KMatrix<T,M,N>& B)
@@ -128,3 +126,4 @@ void iniM_mulUOUO(KMatrix<T,M,M>* const pOut, const KUSymMat<T,M>& A,const KUSym
   }
 }
 
+//#########################################################################################
