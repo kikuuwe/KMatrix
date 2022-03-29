@@ -86,73 +86,60 @@
 #endif
 //##########################################
 
-
-//############################################################################################
-_TYPE_ operator+  (const _TYPE_& b) const
-{
-	_TYPE_ out;
-	::iniX_addXOXO(&out,*this, b);
-	return out;
-}
-_TYPE_ operator-  (const _TYPE_& b) const
-{
-	_TYPE_ out;
-	::iniX_minXOXO(&out,*this, b);
-	return out;
-}
-_TYPE_ operator*  (const T&  a) const
-{
-	_TYPE_ out;
-	::iniX_mulXOS(&out,*this, a);
-	return out;
-}
-_TYPE_ operator/  (const T& a) const
-{
-	_TYPE_ out;
-	::iniX_mulXOS(&out,*this, 1./a);
-	return out;
-}
-//############################################################################################
-_TYPE_ operator- () const    
-{
-  _TYPE_ out;
-  ::iniX_mulXOS(&out,*this, (T)(-1.));
-  return out;
-}
-//############################################################################################
-void operator =(const _TYPE_& A)
+_TYPE_ operator =(const _TYPE_& A)
 {
 	macro_ope_one({
 		 *pO = (*pA) ;
 	});
+	return *this;
 }
-void operator +=(const _TYPE_& A)
+_TYPE_ operator +=(const _TYPE_& A)
 {
 	macro_ope_one({
 		 *pO += (*pA) ;
 	});
+	return *this;
 }
-void operator -=(const _TYPE_& A)
+_TYPE_ operator -=(const _TYPE_& A)
 {
 	macro_ope_one({
 		 *pO -= (*pA) ;
 	});
+	return *this;
 }
-void operator *=(const T& ko)
+_TYPE_ operator *=(const T& ko)
 {
 	macro_ope_zero({
 		 *pO *= ko ;
 	});
+	return *this;
 }
-void operator /=(const T& ko)
+_TYPE_ operator /=(const T& ko)
 {
 	(*this) *= (1./ko);
+	return *this;
 }
+
+#ifndef __USYM_MODE__
+_TYPE_ operator -() const
+{
+	_TYPE_ A ;
+  const T* pO   = (T*)this  ;  
+        T* pA   = (T*)&A    ;  
+  for(int i=0;i<(_NUM_)-1;i++){
+    (*pA) = -(*pO) ;           
+    pO++;pA++;                 
+  }                            
+  {                            
+    (*pA) = -(*pO) ;           
+  }                            
+	return A;
+}
+#endif
 //############################################################################################
+
 
 
 #undef macro_ope_zero
 #undef macro_ope_one
 #undef macro_ope_two
-
-
