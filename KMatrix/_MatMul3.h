@@ -1,4 +1,3 @@
-
 //#########################################################################################
 template<int K,int L,int M,int N> inline
 void iniM_mulMTMOMO(KMatrix<double,K,L>* const pOut
@@ -32,7 +31,6 @@ void addM_mulMOMOMT(KMatrix<double,K,L>* const pOut
   addM_mulMOMT(pOut,tAB,C);
 }
 //#########################################################################################
-
 template<class T,int M,int N>inline
 void iniM_mulUOMOUO(KMatrix<T,M,N>* const pO,  const KUSymMat<T,M>& A, const KMatrix<T,M,N>& B, const KUSymMat<T,N>& C)
 {
@@ -40,3 +38,4 @@ void iniM_mulUOMOUO(KMatrix<T,M,N>* const pO,  const KUSymMat<T,M>& A, const KMa
   init_mulOO(&tBC ,   B  , C  );
   init_mulOO(pO   ,  A , tBC  );
 }
+//#########################################################################################
