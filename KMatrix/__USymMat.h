@@ -13,7 +13,7 @@ template<class T, int N>struct KUSymMat
 	#define __USYM_MODE__
 	#define _TYPE_ KUSymMat<T,N>
 	#define _UNUM_  (N)
-	#include "KMatrix/_elementwise_member.h"
+	#include "_elementwise_member.h"
 	#undef _TYPE_
 	#undef _UNUM_
 	#undef __USYM_MODE__
@@ -24,7 +24,7 @@ template<class T, int N>struct KUSymMat
 #define _UNUM_          (N)
 #define _DECTEMPLATE_  template<class T,int N> 
 #define _TYPE_         KUSymMat<T,N>
-#include "KMatrix/_elementwise_global.h"
+#include "_elementwise_global.h"
 #undef _DECTEMPLATE_
 #undef _TYPE_
 #undef _UNUM_
