@@ -1,6 +1,6 @@
 //###################################
 //
-//      KMatrix,  Ryo Kikuuwe 2004/12/2
+//     KMatrix,  Ryo Kikuuwe 2004/12/2
 //
 //###################################
 
@@ -15,8 +15,6 @@
 #include "KMatrix/_Matrix_and_USymMat.h"
 #include "KMatrix/_MatMul2.h"
 #include "KMatrix/_MatMul3.h"
-
-//###############################################################################
 
 #endif
 
