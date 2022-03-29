@@ -1,4 +1,3 @@
-
 //#########################################################################################
 template<class T,int M,int N>struct KMatrix
 {
@@ -7,7 +6,7 @@ template<class T,int M,int N>struct KMatrix
   T& operator()(int i, int j)const{return *(((T*)this)+ (i * N + j));}
   #define _TYPE_ KMatrix<T,M,N>
   #define _NUM_  (M*N)
-  #include "KMatrix/_elementwise_member.h"
+  #include "_elementwise_member.h"
   #undef _TYPE_
   #undef _NUM_
 };
@@ -15,7 +14,7 @@ template<class T,int M,int N>struct KMatrix
 #define _NUM_          (M*N)
 #define _DECTEMPLATE_  template<class T,int M,int N> 
 #define _TYPE_         KMatrix<T,M,N>
-#include "KMatrix/_elementwise_global.h"
+#include "_elementwise_global.h"
 #undef _DECTEMPLATE_
 #undef _TYPE_
 #undef _NUM_
@@ -71,25 +70,24 @@ minM_IS(KMatrix<T,M,M>* const pOut, const T& val)
 //#########################################################################################
 
 template<class T,int M,int N> inline
-void addM_MT(KMatrix<T,M,N>* const pOut, const KMatrix<T,N,M>& A)
-{
-  __xxxM_MT__(+=)
-}
-template<class T,int M,int N> inline
 void iniM_MT(KMatrix<T,M,N>* const pOut, const KMatrix<T,N,M>& A)
 {
   __xxxM_MT__(=)
 }
 template<class T,int M,int N> inline
-void negM_MT(KMatrix<T,M,N>* const pOut, const KMatrix<T,N,M>& A)
+void addM_MT(KMatrix<T,M,N>* const pOut, const KMatrix<T,N,M>& A)
 {
-  __xxxM_MT__(=-)
+  __xxxM_MT__(+=)
 }
-
 template<class T,int M,int N> inline
 void minM_MT(KMatrix<T,M,N>* const pOut, const KMatrix<T,N,M>& A)
 {
   __xxxM_MT__(-=)
+}
+template<class T,int M,int N> inline
+void negM_MT(KMatrix<T,M,N>* const pOut, const KMatrix<T,N,M>& A)
+{
+  __xxxM_MT__(=-)
 }
 
 #undef __xxxM_MT__
