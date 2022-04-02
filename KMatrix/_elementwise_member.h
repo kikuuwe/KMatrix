@@ -143,3 +143,5 @@ _TYPE_ operator -() const
 #undef macro_ope_zero
 #undef macro_ope_one
 #undef macro_ope_two
+
+

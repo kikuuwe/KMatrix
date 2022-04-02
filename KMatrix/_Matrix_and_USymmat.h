@@ -100,9 +100,34 @@ void addU_quadMOUOMT(KUSymMat<double,M>* const pOut, const KUSymMat<double,N>& A
 }
 
 template<int M,int N> inline
+void minU_quadMOUOMT(KUSymMat<double,M>* const pOut, const KUSymMat<double,N>& A, const KMatrix<double,M,N>& B)
+{
+  KMatrix<double,M,N> tBA  ;
+  iniM_mulMOUO(&tBA  , B ,    A  );
+  minU_mulMOMT(pOut  ,  tBA , B  );
+}
+/************************************************************************/
+
+template<int M,int N> inline
 void iniU_quadMTUOMO(KUSymMat<double,M>* const pOut, const KUSymMat<double,N>& A, const KMatrix<double,N,M>& B)
 {
   KMatrix<double,N,M> tAB  ;
   iniM_mulUOMO(&tAB  , A ,    B  );
   iniU_mulMTMO(pOut   , B ,  tAB );
+}
+
+template<int M,int N> inline
+void addU_quadMTUOMO(KUSymMat<double,M>* const pOut, const KUSymMat<double,N>& A, const KMatrix<double,N,M>& B)
+{
+  KMatrix<double,N,M> tAB  ;
+  iniM_mulUOMO(&tAB  , A ,    B  );
+  addU_mulMTMO(pOut   , B ,  tAB );
+}
+
+template<int M,int N> inline
+void minU_quadMTUOMO(KUSymMat<double,M>* const pOut, const KUSymMat<double,N>& A, const KMatrix<double,N,M>& B)
+{
+  KMatrix<double,N,M> tAB  ;
+  iniM_mulUOMO(&tAB  , A ,    B  );
+  minU_mulMTMO(pOut   , B ,  tAB );
 }

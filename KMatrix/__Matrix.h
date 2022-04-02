@@ -26,15 +26,17 @@ void iniS_trace(T *pOut,const KMatrix<T,M,M>& A)
 }
 
 template<class T, int M> inline
-T trace(const KMatrix<T,M,M>& A)
-{
-  T out ;
-  iniS_trace(&out,A);
-  return out;
-}
+T trace(const KMatrix<T,M,M>& A){T out; iniS_trace(&out,A); return out;}
 
 //#########################################################################################
-//#########################################################################################
+template<class T, int M> inline void
+iniM_IS(KMatrix<T,M,M>* const pOut, const T& val)
+{
+	pOut->zero();
+  T* pO = (T*)pOut; 
+                      {              (*pO)  = val;}
+  for(int i=1;i<M;i++){ pO += (M+1); (*pO)  = val;}
+}
 template<class T, int M> inline void
 addM_IS(KMatrix<T,M,M>* const pOut, const T& val)
 {
@@ -50,7 +52,6 @@ minM_IS(KMatrix<T,M,M>* const pOut, const T& val)
   for(int i=1;i<M;i++){ pO += (M+1); (*pO) -= val;}
 }
 //#########################################################################################
-//#########################################################################################
 
 #define __xxxM_MT__( _eqs_ ) {                            \
   T* pO = (T*)pOut;                                       \
@@ -65,9 +66,7 @@ minM_IS(KMatrix<T,M,M>* const pOut, const T& val)
     for(int j=0;j<N-1;j++){(*pO) _eqs_ (*pA);pO++;pA+=M;} \
                           {(*pO) _eqs_ (*pA);}            \
   }                                                       \
-}                                                         \
-
-//#########################################################################################
+}                                                         
 
 template<class T,int M,int N> inline
 void iniM_MT(KMatrix<T,M,N>* const pOut, const KMatrix<T,N,M>& A)

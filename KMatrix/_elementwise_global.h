@@ -114,6 +114,7 @@
 }
 //##########################################
 #endif
+
 //##########################################
 _DECTEMPLATE_ inline
 void iniX_addXOXO(_TYPE_* const pOut, const _TYPE_& A, const _TYPE_& B)
@@ -137,7 +138,7 @@ void iniX_addXOXOXO(_TYPE_* const pOut, const _TYPE_& A, const _TYPE_& B, const 
 	});
 }
 
-
+//##########################################
 _DECTEMPLATE_ inline
 void iniX_mulXOS(_TYPE_* const pOut, const _TYPE_& A, const T& ka )
 {
@@ -160,6 +161,13 @@ void iniX_mulXX_cmpntwise(_TYPE_* const pOut, const _TYPE_& A, const _TYPE_& B )
 }
 //##########################################
 _DECTEMPLATE_ inline
+void iniX_XO(_TYPE_* const pOut, const _TYPE_& A)
+{
+	macro_ope_one({
+		 *pO = (*pA);
+	});
+}
+_DECTEMPLATE_ inline
 void addX_XO(_TYPE_* const pOut, const _TYPE_& A)
 {
 	macro_ope_one({
@@ -171,14 +179,6 @@ void minX_XO(_TYPE_* const pOut, const _TYPE_& A)
 {
 	macro_ope_one({
 		 *pO -= (*pA);
-	});
-}
-//##########################################
-_DECTEMPLATE_ inline
-void iniX_XO(_TYPE_* const pOut, const _TYPE_& A)
-{
-	macro_ope_one({
-		 *pO = (*pA);
 	});
 }
 _DECTEMPLATE_ inline
@@ -246,59 +246,30 @@ void pile_times_wplus(_TYPE_* const pOut, T ko, const _TYPE_& A,  const T& ka)  
 		 *pO +=(*pA)*ka ;
 	});
 }
-//////////////////////////////////////
 
 //############################################################################################
 _DECTEMPLATE_ inline
-_TYPE_ operator+  (const _TYPE_& a, const _TYPE_& b) 
-{
-	_TYPE_ out;
-	::iniX_addXOXO(&out,a, b);
-	return out;
-}
+_TYPE_ operator+(const _TYPE_& a, const _TYPE_& b){_TYPE_ out; ::iniX_addXOXO(&out,a,b); return out;}
 //-----------------------------------------
 _DECTEMPLATE_ inline
-_TYPE_ operator-  (const _TYPE_& a, const _TYPE_& b) 
-{
-	_TYPE_ out;
-	::iniX_minXOXO(&out,a, b);
-	return out;
-}
+_TYPE_ operator-(const _TYPE_& a, const _TYPE_& b){_TYPE_ out; ::iniX_minXOXO(&out,a,b); return out;}
 //-----------------------------------------
 _DECTEMPLATE_ inline
-_TYPE_ operator*  (const _TYPE_& a, const T&  b) 
-{
-	_TYPE_ out;
-	::iniX_mulXOS(&out,a, b);
-	return out;
-}
+_TYPE_ operator*(const _TYPE_& a, const T&  b) {_TYPE_ out; ::iniX_mulXOS(&out,a,b); return out;}
 //-----------------------------------------
 _DECTEMPLATE_ inline
-_TYPE_ operator* (const T&  b, const _TYPE_& a)          
-{
-  _TYPE_ out;
-  iniX_mulXOS(&out, a, b);
-  return out;
-}
+_TYPE_ operator*(const T&  b, const _TYPE_& a) { _TYPE_ out; iniX_mulXOS(&out, a,b); return out;}
 //-----------------------------------------
 _DECTEMPLATE_ inline
-_TYPE_ operator/  (const _TYPE_& a, const T& b) 
-{
-	_TYPE_ out;
-	::iniX_mulXOS(&out,a, 1./b);
-	return out;
-}
+_TYPE_ operator/(const _TYPE_& a, const T& b) { _TYPE_ out; ::iniX_mulXOS(&out,a,1./b); return out;}
 //############################################################################################
 
-//_TYPE_ operator- () const    
-//{
-//  _TYPE_ out;
-//  ::iniX_mulXOS(&out,*this, (T)(-1.));
-//  return out;
-//}
 
 
 #undef macro_ope_zero
 #undef macro_ope_one
 #undef macro_ope_two
 #undef macro_ope_three
+
+
+
