@@ -197,5 +197,3 @@ void init_qrate_from_omg(KQuaternion* const p_dq, const KVector<double,3>& omg, 
 
 
 #endif
-
-
