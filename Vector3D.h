@@ -39,25 +39,21 @@ inline double vtriprod(const KVector<double, 3>& A, const KVector<double,3>& B,c
   return out;
 }
 /***************************************************/
-inline void area_cal(double* const pOut, const KVector<double, 3>& A, const KVector<double,3>& B)
+inline void iniM_wedgeV(KMatrix<double,3,3>* const pO, const KVector<double,3>& a)
 {
-  const double* pA = (double*) (&A) ;
-  const double* pB = (double*) (&B) ;
-  (*pOut)  = ( A(1)*B(2)  -  A(2)*B(1) )*( A(1)*B(2)  -  A(2)*B(1) );
-  (*pOut) += ( A(2)*(*pB) - (*pA)*B(2) )*( A(2)*(*pB) - (*pA)*B(2) );
-  (*pOut) += ( (*pA)*B(1) - A(1)*(*pB) )*( (*pA)*B(1) - A(1)*(*pB) ); 
-  (*pOut)  = sqrt(*pOut)/2;
+  const double* pA = (double*)&a;
+        double* pT = (double*)pO;
+  pT[0] = 0;
+  pT[4] = 0;
+  pT[8] = 0;
+  pT[2*3+1] =+ (*pA);
+  pT[1*3+2] =- (*pA);pA++;
+  pT[0*3+2] =+ (*pA);
+  pT[2*3+0] =- (*pA);pA++;
+  pT[1*3+0] =+ (*pA);
+  pT[0*3+1] =- (*pA);
 }
-
-inline double triangle_area(const KVector<double, 3>& A, const KVector<double,3>& B)
-{
-  double out;
-  area_cal(&out, A, B);
-  return out;
-}
-
-/***************************************************/
-inline void addM_VPEquiv(KMatrix<double,3,3>* const pO, const KVector<double,3>& a)
+inline void addM_wedgeV(KMatrix<double,3,3>* const pO, const KVector<double,3>& a)
 {
   const double* pA = (double*)&a;
         double* pT = (double*)pO;
@@ -67,9 +63,8 @@ inline void addM_VPEquiv(KMatrix<double,3,3>* const pO, const KVector<double,3>&
   pT[2*3+0] -= (*pA);pA++;
   pT[1*3+0] += (*pA);
   pT[0*3+1] -= (*pA);
-
 }
-inline void minM_VPEquiv(KMatrix<double,3,3>* const pO, const KVector<double,3>& a)
+inline void minM_wedgeV(KMatrix<double,3,3>* const pO, const KVector<double,3>& a)
 {
   const double* pA = (double*)&a;  
         double* pT = (double*)pO;
