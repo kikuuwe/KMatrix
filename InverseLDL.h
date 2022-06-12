@@ -107,15 +107,32 @@ double invU(KUSymMat<double,N>* const pO)
   return out;
 }
 //#####################################################################X
-
 template<int N> inline
-double iniU_invUO(KUSymMat<double,N>* const pOut , const KUSymMat<double,N>& A)
+double iniU_invUO(KUSymMat<double,N>* const pOut, const KUSymMat<double,N>& A)
 {
   *pOut = A;
   return invU(pOut);
 }
 //#####################################################################X
 
+template<int N> inline
+double iniU_invUO_11(KUSymMat<double,N>* const pOut , const KUSymMat<double,N>& A)
+{
+	double               aa =A(0,0);
+	KVector <double,N-1> bb;
+	KUSymMat<double,N-1> CC;
+	for(int i=0;i<N-1;i++)                      bb(i)  =A(0,  i+1);
+	for(int i=0;i<N-1;i++)for(int j=i;j<N-1;j++)CC(i,j)=A(i+1,j+1);
+	addU_squVOSVT(&CC, bb, -1./aa );
+	invU(&CC);
+	KUSymMat<double,N> CCE; CCE.zero(); CCE(0,0) = 1./aa;
+	for(int i=0;i<N-1;i++)for(int j=i;j<N-1;j++)CCE(i+1,j+1)=CC(i,j);
+	KMatrix<double,N,N> MM; MM.zero();
+	for(int i=0;i<N  ;i++)MM(i  ,i)=1;
+	for(int i=0;i<N-1;i++)MM(i+1,0)=-bb(i)/aa;
+	iniU_quadMTUOMO(pOut, CCE, MM );
+	return 1;
+}
 
 
 #endif
