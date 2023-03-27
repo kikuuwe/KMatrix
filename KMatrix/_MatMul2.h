@@ -58,11 +58,12 @@ minM_mulMOMT(KMatrix<T,M,N>* const pOut, const KMatrix<T,M,K>& A,const KMatrix<T
 #define ___xxxU_mulMOMT___( _eqsini_, _eqs_ ) {             \
   for(int i=0;i<M;i++)for(int j=i;j<M;j++)                  \
   {                                                         \
-      T* pO =&((*pOut)(i,j))  ;                        \
+      T* pO =&((*pOut)(i,j))  ;                             \
                            (*pO) _eqsini_ A(i,0) * B(j,0) ; \
       for(int k=1;k<K;k++) (*pO) _eqs_    A(i,k) * B(j,k) ; \
   }                                                         \
-}                                                           
+}                                                           \
+
 
 template<class T,int M,int K> inline void
 iniU_mulMOMT(KUSymMat<T,M>* const pOut, const KMatrix<T,M,K>& A,const KMatrix<T,M,K>& B){___xxxU_mulMOMT___(=,+=)}
@@ -74,7 +75,6 @@ template<class T,int M,int K> inline void
 minU_mulMOMT(KUSymMat<T,M>* const pOut, const KMatrix<T,M,K>& A,const KMatrix<T,M,K>& B){___xxxU_mulMOMT___(-=,-=)}
 
 #undef ___xxxU_mulMOMT___
-
 //#########################################################################################
 template<class T,int M,int K> inline
 void iniU_mulMTMO(KUSymMat<T,M>* const pOut, const KMatrix<T,K,M>& A,const KMatrix<T,K,M>& B)
@@ -142,6 +142,16 @@ void iniM_mulUOUO(KMatrix<T,M,M>* const pOut, const KUSymMat<T,M>& A,const KUSym
       for(int k=j;k<M;k++)  (*pOut)(i,j) += A(i,k) * B(j,k) ;
     }
   }
+}
+
+//#########################################################################################
+
+template<class T,int K,int N,int M> inline
+KMatrix<T,M,K> operator*(const KMatrix<T,M,N>& a, const KMatrix<T,N,K>& b)
+{
+  KMatrix<T,M,K> out;
+  iniM_mulMOMO(&out , a,b);
+  return out;
 }
 
 //#########################################################################################
