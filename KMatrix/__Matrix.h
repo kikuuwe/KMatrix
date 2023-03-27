@@ -9,8 +9,14 @@ template<class T,int M,int N>struct KMatrix
   #include "_elementwise_member.h"
   #undef _TYPE_
   #undef _NUM_
+  KMatrix<T,N,M> trp() const
+  {
+    KMatrix<T,N,M> out; 
+    for(int i=0;i<M;i++)for(int j=0;j<N;j++) out(j,i)=(*this)(i,j);
+    return out;
+  }
+  KMatrix<T,N,M> transpose() const{ return trp();}// only for compatibility
 };
-
 #define _NUM_          (M*N)
 #define _DECTEMPLATE_  template<class T,int M,int N> 
 #define _TYPE_         KMatrix<T,M,N>
@@ -32,10 +38,10 @@ T trace(const KMatrix<T,M,M>& A){T out; iniS_trace(&out,A); return out;}
 template<class T, int M> inline void
 iniM_IS(KMatrix<T,M,M>* const pOut, const T& val)
 {
-	pOut->zero();
-  T* pO = (T*)pOut; 
-                      {              (*pO)  = val;}
-  for(int i=1;i<M;i++){ pO += (M+1); (*pO)  = val;}
+  pOut->zero();
+  T* pO = (T*)pOut;
+                      {              (*pO) = val;}
+  for(int i=1;i<M;i++){ pO += (M+1); (*pO) = val;}
 }
 template<class T, int M> inline void
 addM_IS(KMatrix<T,M,M>* const pOut, const T& val)
@@ -90,8 +96,3 @@ void negM_MT(KMatrix<T,M,N>* const pOut, const KMatrix<T,N,M>& A)
 }
 
 #undef __xxxM_MT__
-
-//#########################################################################################
-
-#undef macro_check
-
