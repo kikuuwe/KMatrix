@@ -20,8 +20,17 @@ inline KVector<double,3> outer(const KVector<double,3>& A, const KVector<double,
   iniV_outer(&out, A, B);
   return out;
 }
+inline void iniS_outer(double* const pOut, const KVector<double,2>& A, const KVector<double,2>& B)
+{
+  (*pOut) = A(0)*B(1) - A(1)*B(0);
+}
+inline double outer(const KVector<double,2>& A, const KVector<double,2>& B)
+{
+  double out;
+  iniS_outer(&out, A, B);
+  return out;
+}
 /***************************************************/
-
 inline void iniS_triprod(double* const pOut, const KVector<double, 3>& A, const KVector<double,3>& B,const KVector<double, 3>& C)
 {
   const double* pA = (double*) (&A) ;
@@ -31,7 +40,6 @@ inline void iniS_triprod(double* const pOut, const KVector<double, 3>& A, const 
   (*pOut) += (*pA)*(B(2)*(*pC) - (*pB)*C(2) ); pA++;
   (*pOut) += (*pA)*((*pB)*C(1) - B(1)*(*pC) ); 
 }
-
 inline double vtriprod(const KVector<double, 3>& A, const KVector<double,3>& B,const KVector<double, 3>& C)
 {
   double out;
@@ -39,19 +47,46 @@ inline double vtriprod(const KVector<double, 3>& A, const KVector<double,3>& B,c
   return out;
 }
 /***************************************************/
-inline void iniM_wedgeV(KMatrix<double,3,3>* const pO, const KVector<double,3>& a)
+inline void ortho(KMatrix<double, 3, 3>* pmat)
 {
-  const double* pA = (double*)&a;
-        double* pT = (double*)pO;
-  pT[0] = 0;
-  pT[4] = 0;
-  pT[8] = 0;
-  pT[2*3+1] =+ (*pA);
-  pT[1*3+2] =- (*pA);pA++;
-  pT[0*3+2] =+ (*pA);
-  pT[2*3+0] =- (*pA);pA++;
-  pT[1*3+0] =+ (*pA);
-  pT[0*3+1] =- (*pA);
+  const double EPS = 1.0e-8;
+  KMatrix<double,3,3>& m = *pmat;
+  double a;
+  a = 1./max(EPS,sqrt(m(0, 0)*m(0, 0)+m(1, 0)*m(1, 0)+m(2, 0)*m(2, 0)));
+  m(0, 0) *= a;
+  m(1, 0) *= a;
+  m(2, 0) *= a;
+  a = m(0, 0)*m(0, 1)+m(1, 0)*m(1, 1)+m(2, 0)*m(2, 1);
+  m(0, 1) -= a*m(0, 0);
+  m(1, 1) -= a*m(1, 0);
+  m(2, 1) -= a*m(2, 0);
+  a = 1./max(EPS,sqrt(m(0, 1)*m(0, 1)+m(1, 1)*m(1, 1)+m(2, 1)*m(2, 1)));
+  m(0, 1) *= a;
+  m(1, 1) *= a;
+  m(2, 1) *= a;
+  m(0, 2) = m(1, 0)*m(2, 1)-m(2, 0)*m(1, 1);
+  m(1, 2) = m(2, 0)*m(0, 1)-m(0, 0)*m(2, 1);
+  m(2, 2) = m(0, 0)*m(1, 1)-m(1, 0)*m(0, 1);
+}
+/***************************************************/
+inline void iniM_wedgeV(KMatrix<double, 3, 3>* const pM, const KVector<double,3>& omg)
+{
+  KMatrix<double, 3, 3>& out = *pM;
+  out(2, 1) = omg(0);
+  out(1, 2) = -omg(0);
+  out(0, 2) = omg(1);
+  out(2, 0) = -omg(1);
+  out(1, 0) = omg(2);
+  out(0, 1) = -omg(2);
+  out(0, 0) = 0;
+  out(1, 1) = 0;
+  out(2, 2) = 0;
+}
+inline KMatrix<double, 3, 3> wedgeV(const KVector<double,3>& omg)
+{
+  KMatrix<double, 3, 3> out ;
+  iniM_wedgeV(&out,omg);
+  return out;
 }
 inline void addM_wedgeV(KMatrix<double,3,3>* const pO, const KVector<double,3>& a)
 {
@@ -63,6 +98,7 @@ inline void addM_wedgeV(KMatrix<double,3,3>* const pO, const KVector<double,3>& 
   pT[2*3+0] -= (*pA);pA++;
   pT[1*3+0] += (*pA);
   pT[0*3+1] -= (*pA);
+
 }
 inline void minM_wedgeV(KMatrix<double,3,3>* const pO, const KVector<double,3>& a)
 {
@@ -76,180 +112,106 @@ inline void minM_wedgeV(KMatrix<double,3,3>* const pO, const KVector<double,3>& 
   pT[0*3+1] += (*pA);         
 }
 /***************************************************/
-inline void iniS_outer(double* const pOut, const KVector<double,2>& A, const KVector<double,2>& B)
+inline KVector<double,3> sat(const double& a, const KVector<double,3>& b)
 {
-  (*pOut) = A(0)*B(1) - A(1)*B(0);
+   const double EPS = 1.0e-8;
+   double babs = max(EPS,vabs(b));
+   if(babs>a) return b*(a/babs);
+   return b;
+}
+inline KVector<double,3> gsat2(const KVector<double,3>& a,const KVector<double,3>& b)
+{
+  KVector<double,3> out;out.zero();
+  out(0) = max(-a(0),min(a(0),b(0)));
+  out(1) = max(-a(1),min(a(1),b(1)));
+  out(2) = max(-a(2),min(a(2),b(2)));
+  return out;
+}
+
+inline KVector<double,3> sat3E(double X, const KVector<double,3>& x)
+{
+  const double EPS = 1.0e-8;
+  double ax0 = fabs(x(0));
+  double ax1 = fabs(x(1));
+  double ax2 = fabs(x(2));
+  double axm = max(ax0,max(ax1,ax2));
+  if(axm>X) return X/axm*x;
+  else      return x;
 }
 /***************************************************/
-
-inline KVector<double,3> gsat(const double& a, const KVector<double,3>& b)
+inline double sinc(const double& a)
 {
-    double babs = vabs(b);
-    if(babs>a) return b*(a/babs);
-    return b;
+  const double EPS = 1.0e-10;
+  if(fabs(a)<EPS) return 1.0-a*a*(1./6-a*a/120);
+  return sin(a)/a;
 }
+inline double cosc(const double& a)
+{
+  const double EPS = 1.0e-6;
+  if (fabs(a)<EPS) return 0.5-a*a*(1./24-a*a/720);
+  return (1.-cos(a))/(a*a);
+}
+inline double sign(const double& A){ if(A>0)return 1.; if(A<0) return -1.; return 0; }
 /***************************************************/
 
+inline void iniM_expV(KMatrix<double,3,3>* const pO, const KVector<double,3>& V)
+{
+    KMatrix<double,3,3>& M = *pO;
+    double a = vabs(V);
+    KMatrix<double, 3, 3> K ; iniM_wedgeV (&K, V);
+    KMatrix<double, 3, 3> KK; iniM_mulMOMO(&KK, K, K);
+    iniX_mulXOS(&M, KK, cosc(a));
+    addX_mulXOS(&M, K , sinc(a));
+    addM_IS    (&M, 1.         );
+    ortho(&M);
+}
+inline  KMatrix<double,3,3> expV(const KVector<double,3>& V){KMatrix<double,3,3> M;iniM_expV(&M,V);return M;}
+
+/******************************************************************************************/
+
+inline void iniV_logM(KVector<double,3>* const pV,const KMatrix<double,3,3>& R)
+{
+  KVector<double,3>& u = *pV ;
+  double costheta = (trace(R)-1.)*0.5;
+  double theta = acos(max(-1.,min(1.,costheta)));
+  if(theta<M_PI/3.) // costheta > 0.5
+  {
+    u(0) = R(2,1)-R(1,2);
+    u(1) = R(0,2)-R(2,0);
+    u(2) = R(1,0)-R(0,1);
+    u /= (2. * sinc(theta));
+  }
+  else
+  { // Using the idea of Kuo Kan Liang, https://arxiv.org/abs/1810.02999
+    KMatrix<double,3,3> RI = R; minM_IS(&RI,1.);
+    KVector<double,3>& v0 = *(KVector<double,3>*)&(RI(0,0));
+    KVector<double,3>& v1 = *(KVector<double,3>*)&(RI(1,0));
+    KVector<double,3>& v2 = *(KVector<double,3>*)&(RI(2,0));
+    KVector<double,3> ua = outer(v1,v2); double vabs_ua = vabs(ua);
+    KVector<double,3> ub = outer(v2,v0); double vabs_ub = vabs(ub);
+    KVector<double,3> uc = outer(v0,v1); double vabs_uc = vabs(uc);
+    double vabs_u ;
+    if     (vabs_ua>=vabs_ub && vabs_ua>=vabs_uc){u = ua; vabs_u = vabs_ua;}
+    else if(vabs_ub>=vabs_ua && vabs_ub>=vabs_uc){u = ub; vabs_u = vabs_ub;}
+    else                                         {u = uc; vabs_u = vabs_uc;}
+    u  *= (1./vabs_u) * atan2(-trace(wedgeV(u)*R),vabs_u*(trace(R)-1.)) ;
+  }
+}
+  
+inline KVector<double,3> logM(const KMatrix<double,3,3>& M){KVector<double,3> V;iniV_logM(&V,M);return V;}
+
+/******************************************************************************************/
+
+/******************************************************************************************/
 inline 
-void init_rotvec(KVector<double,3>* const pOut, const KVector<double,3>& a, const KVector<double,3>& b)
+void init_mulExpVVO(KVector<double,3>* const pOut,const KVector<double,3>& a,const KVector<double,3>& V)
 {
-  iniV_outer(pOut, a, b);
-  double tmp   = vabs(*pOut);
-  double alpha ; iniS_mulVTVO(&alpha, a, b);
-  if(tmp>0)
-  {
-    alpha = acos(max(-1,min(1,alpha)) );
-    *pOut  *= (alpha/tmp);
-    return;
-  }
-  if(alpha<0)
-  {
-    *pOut = a;
-    int mni=-1;
-    alpha = 2;
-    for(int i=0;i<3;i++){ if(fabs(a(i))<alpha){alpha=fabs(a(i));mni=i;}} 
-    (*pOut)(mni)+= 1;
-    *pOut -= inner(*pOut,a)*a;
-    alpha = vabs(*pOut);
-    if(alpha>0) *pOut *= (M_PI/alpha);
-    else     {pOut->zero();exit(1);}
-    return;
-  }
-  pOut->zero();
+    iniV_mulMOVO(pOut,expV(a),V);
 }
-
-inline
-void init_RotationMatrix_Partial(KMatrix<double,3,2>* const pMatRot, const KVector<double,3>& aV)
+inline KVector<double,3> mulExpVVO(const KVector<double,3>& a, const KVector<double,3>& V)
 {
-  // [MatRot.vec(0) ,MatRot.vec(1), aV] constitutes a right-hand system.
-  if( aV(1) != 0 || aV(2) != 0)
-  {
-    double  L  = vabs(aV);
-    double va = aV(0)/L;
-    double vb = aV(1)/L;
-    double vc = aV(2)/L;
-    double  tmp = sqrt( vb * vb + vc * vc );
-    double  tmpinv = 1./tmp ;
-    (*pMatRot)(0,0) = 0.            ;  (*pMatRot)(0,1) = tmp                ;
-    (*pMatRot)(1,0) = - vc * tmpinv ;  (*pMatRot)(1,1) = - va * vb * tmpinv ;
-    (*pMatRot)(2,0) =   vb * tmpinv ;  (*pMatRot)(2,1) = - va * vc * tmpinv ;
-    return ;
-  }
-  if(aV(0)>0)
-  {
-    (*pMatRot)(0,0) = (double)0.;   (*pMatRot)(0,1) = (double)0.;
-    (*pMatRot)(1,0) = (double)1.;    (*pMatRot)(1,1) = (double)0.;
-    (*pMatRot)(2,0) = (double)0.;    (*pMatRot)(2,1) = (double)1.;
-    return ;
-  }
-  if(aV(0)<0)
-  {
-    (*pMatRot)(0,0) = (double)0.;     (*pMatRot)(0,1) = (double)0.;
-    (*pMatRot)(1,0) = (double)0.;     (*pMatRot)(1,1) = (double)1.;
-    (*pMatRot)(2,0) = (double)1.;     (*pMatRot)(2,1) = (double)0.;
-    return ;
-  }
-  pMatRot->zero();
-  return ;
-}
-
-inline
-void init_RotationMatrix(KMatrix<double,3,3>* const pMatRot, const KVector<double,3>& aV)
-{
-  // [MatRot.vec(0) ,MatRot.vec(1), aV] constitutes a right-hand system.
-  if( aV(1) != 0 || aV(2) != 0)
-  {
-    double  L  = vabs(aV);
-    double va = aV(0)/L;
-    double vb = aV(1)/L;
-    double vc = aV(2)/L;
-    double  tmp = sqrt( vb * vb + vc * vc );
-    double  tmpinv = 1./tmp ;
-    (*pMatRot)(0,0) = 0.            ;  (*pMatRot)(0,1) = tmp                ;(*pMatRot)(0,2) = va ;
-    (*pMatRot)(1,0) = - vc * tmpinv ;  (*pMatRot)(1,1) = - va * vb * tmpinv ;(*pMatRot)(1,2) = vb ;
-    (*pMatRot)(2,0) =   vb * tmpinv ;  (*pMatRot)(2,1) = - va * vc * tmpinv ;(*pMatRot)(2,2) = vc ;
-    return ;
-  }
-  if(aV(0)>0)
-  {
-    (*pMatRot)(0,0) = (double)0.;   (*pMatRot)(0,1) = (double)0.;   (*pMatRot)(0,2) = (double)1.;
-    (*pMatRot)(1,0) = (double)1.;    (*pMatRot)(1,1) = (double)0.;    (*pMatRot)(1,2) = (double)0.;
-    (*pMatRot)(2,0) = (double)0.;    (*pMatRot)(2,1) = (double)1.;    (*pMatRot)(2,2) = (double)0.;
-    return ;
-  }
-  if(aV(0)<0)
-  {
-    (*pMatRot)(0,0) = (double)0.;   (*pMatRot)(0,1) = (double)0.;   (*pMatRot)(0,2) = (double)-1.;
-    (*pMatRot)(1,0) = (double)0.;    (*pMatRot)(1,1) = (double)1.;    (*pMatRot)(1,2) = (double)0.;
-    (*pMatRot)(2,0) = (double)1.;    (*pMatRot)(2,1) = (double)0.;    (*pMatRot)(2,2) = (double)0.;
-    return ;
-  }
-  pMatRot->zero();
-  return ;
-}
-
-
-inline
-void init_rotate(KVector<double,3>* const pr2, const KVector<double,3>& r1, const KVector<double,3>& k, const double& angle)
-{
-  // SEE YOSHIKAWA'S TEXTBOOK pp.138-139, eq(5.10).,
-  KVector<double,3> k_kr1 = k * inner(k,r1);
-  *pr2 = k_kr1 + (r1 - k_kr1)* cos(angle) +  outer(k,r1)*sin(angle) ;
-}
-
-inline
-KVector<double,3> rotate(const KVector<double,3>& r1, const KVector<double,3>& k, const double& angle)
-{
-  // SEE YOSHIKAWA'S TEXTBOOK pp.138-139, eq(5.10).,
-  KVector<double,3> k_kr1 = k * inner(k,r1);
-  return   k_kr1 + (r1 - k_kr1)* cos(angle) +  outer(k,r1)*sin(angle) ;
-}
-
-
-inline  KMatrix<double,3,3> axrotmat(const KVector<double,3>& delRa)
-{
-  KMatrix<double,3,3> out;
-  double a = vabs(delRa);
-  if(a==0)
-  {
-    out.zero();out(0,0)=out(1,1)=out(2,2)=1;
-    return out;
-  }
-  KVector<double,3> delR = delRa/ a;
-  out(0,0)= (1.-cos(a))*delR(0)*delR(0)+ cos(a) ;
-  out(0,1)= (1.-cos(a))*delR(0)*delR(1)-(sin(a))*delR(2);
-  out(0,2)= (1.-cos(a))*delR(0)*delR(2)+(sin(a))*delR(1);
-  out(1,0)= (1.-cos(a))*delR(1)*delR(0)+(sin(a))*delR(2);
-  out(1,1)= cos(a)+(1.-cos(a))*delR(1)*delR(1);
-  out(1,2)= (1.-cos(a))*delR(1)*delR(2)-(sin(a))*delR(0);
-  out(2,0)= (1.-cos(a))*delR(0)*delR(2)-(sin(a))*delR(1);
-  out(2,1)= (1.-cos(a))*delR(2)*delR(1)+(sin(a))*delR(0);
-  out(2,2)= cos(a)+(1.-cos(a))*delR(2)*delR(2);
-  return out;
-}
-
-inline KVector<double,3> rotvec(const KMatrix<double,3,3>& A)
-{
-  KVector<double,3> out;
-  out(0) = (A(2,1)-A(1,2))/2;
-  out(1) = (A(0,2)-A(2,0))/2;
-  out(2) = (A(1,0)-A(0,1))/2;
-  double sa = vabs(out);
-  double ca = (A(0,0)+A(1,1)+A(2,2)-1.)/2;
-  double alpha = atan2(sa,ca);
-  if(sa>0) out *= (alpha/sa) ;
-  else out.zero();
-  return out;
-}
-inline KVector<double,3> axrot(const KVector<double,3>& delRa,const KVector<double,3>& b)
-{
-  double a = vabs(delRa);
-  if(a==0) return b;
-  KVector<double,3> out;
-  iniV_mulMOVO(&out,axrotmat(delRa),b);
-  return out;
+  KVector<double,3> out;init_mulExpVVO(&out,a,V);return out;
 }
 
 
 #endif
-
