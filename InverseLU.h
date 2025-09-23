@@ -1,8 +1,8 @@
-#ifndef Headder_KMatrix_LUInverse
+ï»¿#ifndef Headder_KMatrix_LUInverse
 #define Headder_KMatrix_LUInverse
 
 template<int N> inline
-void iniM_invMO(KMatrix<double,N,N>* const pOut, const KMatrix<double,N,N>& A)		// LU•ª‰ğ
+void iniM_invMO(KMatrix<double,N,N>* const pOut, const KMatrix<double,N,N>& A)		// LUåˆ†è§£
 {
 	double piv;
 	double max;
@@ -12,14 +12,14 @@ void iniM_invMO(KMatrix<double,N,N>* const pOut, const KMatrix<double,N,N>& A)		
 	double scale[N];
 
 	int i,j,k;
-	int piv_i;				// ƒsƒ{ƒbƒg‚Ì”Ô†
+	int piv_i;				// ãƒ”ãƒœãƒƒãƒˆã®ç•ªå·
 	int ip, kp, ib;
-	int ips[N];				// ƒsƒ{ƒbƒg‚Å“ü‚ê‘Ö‚¦‚½Œã‚Ì•À‚Ñ
+	int ips[N];				// ãƒ”ãƒœãƒƒãƒˆã§å…¥ã‚Œæ›¿ãˆãŸå¾Œã®ä¸¦ã³
 
 	KMatrix<double,N,N> Qmat = A;
 	KMatrix<double,N,N>& Qinv = *pOut;
-// ---- LU‚É•ª‰ğ ---------------------------
-	for(i=0;i<N;i++){						// ƒsƒ{ƒbƒg‘I‘ğ
+// ---- LUã«åˆ†è§£ ---------------------------
+	for(i=0;i<N;i++){						// ãƒ”ãƒœãƒƒãƒˆé¸æŠ
 		ips[i] = i;
 		max = 0.0;
 		for(j=0;j<N;j++){
@@ -39,7 +39,7 @@ void iniM_invMO(KMatrix<double,N,N>* const pOut, const KMatrix<double,N,N>& A)		
 			}
 		}
 		if( piv_i!=k ){
-			j = ips[k];						// ƒsƒ{ƒbƒg‚Ì“ü‚ê‘Ö‚¦
+			j = ips[k];						// ãƒ”ãƒœãƒƒãƒˆã®å…¥ã‚Œæ›¿ãˆ
 			ips[k] = ips[piv_i];
 			ips[piv_i] = j;
 		}
@@ -48,15 +48,15 @@ void iniM_invMO(KMatrix<double,N,N>* const pOut, const KMatrix<double,N,N>& A)		
 		for(i=k+1;i<N;i++){
 			ip = ips[i];
 			em = -Qmat(ip,k)/piv;
-			Qmat(ip,k) = -em;					// L‚Ì—v‘f
+			Qmat(ip,k) = -em;					// Lã®è¦ç´ 
 			for(j=k+1;j<N;j++){
-				Qmat(ip,j) += em*Qmat(kp,j);	// U‚Ì—v‘f
+				Qmat(ip,j) += em*Qmat(kp,j);	// Uã®è¦ç´ 
 			}
 		}
 	}
 	kp = ips[N-1];
 
-// ----- ‹ts—ñ‚Ì“±o -------------------
+// ----- é€†è¡Œåˆ—ã®å°å‡º -------------------
 	KMatrix<double,N,N> Id; 
 	Qinv.zero();
 	Id.zero();
