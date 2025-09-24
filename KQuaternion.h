@@ -1,10 +1,11 @@
-﻿#ifndef KQUARTERNION_H_INCLUDED
+#ifndef KQUARTERNION_H_INCLUDED
 #define KQUARTERNION_H_INCLUDED
-
-typedef KVector<double,3> vec3;
+/**********************************************/
+typedef KVector<double,3>   vec3;
 typedef KMatrix<double,3,3> mat3;
 /**********************************************/
-struct quat  {
+struct quat
+{
 	double w,x,y,z; 
 	void init(){w=1;x=y=z=0;};
 	double norm()const{return std::sqrt(w*w+x*x+y*y+z*z);}
@@ -25,14 +26,14 @@ struct vecvec
 	void zero(){for(int i=0;i<6;i++)elm[i]=0;} 
 	double& operator()(int i)const{return *(((double*)this)+i);} 
 	vecvec& operator*=(const double& a){for(int i=0;i<6;i++)elm[i]*=a       ;return *this;} 
-	vecvec& operator+=(const vecvec&  a){for(int i=0;i<6;i++)elm[i]+=a.elm[i];return *this;} 
-	vecvec& operator-=(const vecvec&  a){for(int i=0;i<6;i++)elm[i]-=a.elm[i];return *this;} 
+	vecvec& operator+=(const vecvec& a){for(int i=0;i<6;i++)elm[i]+=a.elm[i];return *this;} 
+	vecvec& operator-=(const vecvec& a){for(int i=0;i<6;i++)elm[i]-=a.elm[i];return *this;} 
 	vec3& sv0()const{return *((vec3*)this);}
 	vec3& sv1()const{return *((vec3*)(&elm[3]));}
 	KVector<double,6>& asvec(){return *((KVector<double,6>*)this);}
 };
-
-struct vecqua{
+struct vecqua
+{
 	double elm[7]; 
 	vec3& vec()const {return *((vec3*)this) ;}
 	quat& qua()const {return *((quat*)(((double*)this)+3)) ;}
@@ -41,8 +42,6 @@ struct vecqua{
 	void  init(){vec().zero();qua().init();}
 	void  normalize(){qua().normalize();}
 }; 
-
-/**********************************************/
 /**********************************************/
 inline quat normalize(const quat& q)
 {
@@ -53,15 +52,10 @@ inline quat normalize(const quat& q)
 /**********************************************/
 inline quat inv(const quat& a)
 {
-	quat b;
 	double r = sqrt(a.w*a.w+a.x*a.x+a.y*a.y+a.z*a.z);
-	if(r==0){ b.w=1.;b.x=0;b.y=0;b.z=0;}
-	else
-	{
-		r = 1./r;
-		b.w=a.w*r;b.x=-a.x*r;b.y=-a.y*r;b.z=-a.z*r;
-	}
-	return b;
+	if(r==0){ return quat({1,0,0,0});}
+	r = 1./r;
+	return quat({a.w*r,-a.x*r,-a.y*r,-a.z*r});
 }
 /**********************************************/
 inline void nearer(const quat& a, quat* pb)
@@ -72,8 +66,7 @@ inline void nearer(const quat& a, quat* pb)
 	pb->y *=-1.;
 	pb->z *=-1.;
 }
-
-inline void nearer( quat* pb)
+inline void nearer(quat* pb)
 {
 	if(pb->w>=0)return ;
 	pb->w *=-1.;
@@ -81,16 +74,10 @@ inline void nearer( quat* pb)
 	pb->y *=-1.;
 	pb->z *=-1.;
 }
-
 inline quat nearer(const quat& a)
 {
 	if(a.w>=0)return a ;
-	quat out ;
-	out.w =-a.w;
-	out.x =-a.x;
-	out.y =-a.y;
-	out.z =-a.z;
-	return out;
+	return quat({-a.w,-a.x,-a.y,-a.z});
 }
 
 inline int nearer(const quat& a, const quat& b, const quat& c)
@@ -205,16 +192,6 @@ inline void iniM_qua(mat3* const pmat, const quat& qua)
 	const double& q3 = qua.z;
 	mat3& mat = *pmat ;
 	double r =qua.norm(); if(r>0) r=1./r;
-	//mat(0,0)=(q0*q0+q1*q1-q2*q2-q3*q3)*r;
-	//mat(0,1)=(q1*q2-q0*q3)*2.*r;
-	//mat(0,2)=(q1*q3+q0*q2)*2.*r;
-	//mat(1,0)=(q1*q2+q0*q3)*2.*r;
-	//mat(1,1)=(q0*q0-q1*q1+q2*q2-q3*q3)*r;
-	//mat(1,2)=(q2*q3-q0*q1)*2.*r;
-	//mat(2,0)=(q1*q3-q0*q2)*2.*r;
-	//mat(2,1)=(q2*q3+q0*q1)*2.*r;
-	//mat(2,2)=(q0*q0-q1*q1-q2*q2+q3*q3)*r;
-
 	mat(0,0)=(q0*q0+q1*q1-q2*q2-q3*q3);
 	mat(0,1)=(q1*q2-q0*q3)*2.;
 	mat(0,2)=(q1*q3+q0*q2)*2.;
@@ -227,6 +204,7 @@ inline void iniM_qua(mat3* const pmat, const quat& qua)
 	mat *= r*r;
 }
 
+/**********************************************/
 inline mat3 qua2mat(const quat& qua){mat3 out; iniM_qua(&out,qua);return out;}
 inline quat mat2qua(const mat3& mat)
 {
@@ -273,8 +251,6 @@ inline quat mat2qua(const mat3& mat)
 	q.z /= r;
 	return q;
 }
-
-
 /**********************************************/
 inline vec3 operator -(const quat& a, const quat& b)
 {
@@ -289,7 +265,7 @@ inline vecvec operator -(const vecqua& a, const vecqua& b)
 	return c;
 }
 /**********************************************/
-inline quat operator +(const quat& a, const vec3& b)// �N�H�[�^�j�I���ƃx�N�g���̉��Z�@0710
+inline quat operator +(const quat& a, const vec3& b)// 
 {
 	return normalize(nearer(vec2qua(b))*a);
 }
@@ -310,13 +286,24 @@ inline vecqua& vecqua::operator +=(const vecvec& b)
 	this->qua() = this->qua()+b.sv1() ;
 	return (*this);
 }
-
-
+/**********************************************/
+inline vecqua tplus(const vecqua& a, const vecvec& b)
+{
+    vecqua c;
+    c.vec() = a.vec() + qua2mat(a.qua())*b.sv0();
+    c.qua() = normalize(a.qua()*nearer(vec2qua(b.sv1())));
+    return c;
+}
+inline vecqua tplus(const vecqua& a, const vecvec& b, const vecvec& c){return tplus(tplus(a,b),c);}
+inline vecqua tplus(const vecqua& a, const vecvec& b, const vecvec& c, const vecvec& d){return tplus(tplus(a,b,c),d);}
+inline vecqua tplus(const vecqua& a, const vecvec& b, const vecvec& c, const vecvec& d, const vecvec& e){return tplus(tplus(a,b,c,d),e);}
+/**********************************************/
 inline vecvec   operator/(const vecvec& a, const double& b){vecvec c; for(int i=0;i<6;i++)c(i)=a(i)/b   ; return c;}
 inline vecvec   operator*(const double& a, const vecvec& b){vecvec c; for(int i=0;i<6;i++)c(i)=a*b(i)   ; return c;}
 inline vecvec   operator*(const vecvec& a, const double& b){vecvec c; for(int i=0;i<6;i++)c(i)=a(i)*b   ; return c;}
 inline vecvec   operator+(const vecvec& a, const vecvec& b){vecvec c; for(int i=0;i<6;i++)c(i)=a(i)+b(i); return c;}
 inline vecvec   operator-(const vecvec& a, const vecvec& b){vecvec c; for(int i=0;i<6;i++)c(i)=a(i)-b(i); return c;}
 inline vecvec   operator-(const vecvec& a                 ){vecvec c; for(int i=0;i<6;i++)c(i)=-a(i)    ; return c;}
+/**********************************************/
 
 #endif
